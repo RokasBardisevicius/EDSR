@@ -16,18 +16,20 @@ Training and Validation Pipelines: Implemented to train the model using paired l
 
 Project Structure:
 
-EDSR/
-├── config.py              # Configuration file containing all hyperparameters and paths
-├── main.py                # Main script to start training or testing
-├── models/
-│   └── model.py           # EDSR model implementation
-├── losses/
-│   └── loss.py            # Custom loss functions including Perceptual Loss and Edge-Aware Loss
-├── train/
-│   └── train.py           # Training script with data loading, model initialization, and training loop
-├── utils/
-│   └── utils.py           # Utility functions for data loading, checkpoint saving, and image processing
-└── checkpoints/           # Directory to save model checkpoints
+
+	EDSR/
+	├── config.py              # Configuration file containing all hyperparameters and paths
+	├── main.py                # Main script to start training or testing
+	├── models/
+	│   └── model.py           # EDSR model implementation
+	├── losses/
+	│   └── loss.py            # Custom loss functions including Perceptual Loss and Edge-Aware Loss
+	├── train/
+	│   └── train.py           # Training script with data loading, model initialization, and training loop
+	├── utils/
+	│   └── utils.py           # Utility functions for data loading, checkpoint saving, and image processing
+	└── checkpoints/           # Directory to save model checkpoints
+
 
 Configuration (config.py)
 The Config class holds all configuration parameters for the project:
