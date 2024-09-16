@@ -1,5 +1,7 @@
 Project Documentation: EDSR with Edge-Aware Loss
+
 Overview
+
 This project aims to enhance image resolution using a deep learning-based Super-Resolution approach, specifically the Enhanced Deep Super-Resolution (EDSR) model. The model is extended with custom loss functions including Perceptual Loss and Edge-Aware Loss to preserve image details and edge structures, improving the perceptual quality of super-resolved images.
 
 Key Components:
