@@ -19,22 +19,22 @@ class Config:
     # Mode settings
     mode = 'train'  # Set to 'train' for training, 'test' for testing
     use_pretrained = False  # Use pretrained weights during training if True
-    weights_path = r"C:\Users\rokas\Desktop\projektinis\EDSR\checkpoints\model_epoch_300_64_numfeatures.pth"  # Path to save or load model weights
+    weights_path =  # Path to save or load model weights
 
     # Dataset directories
-    high_res_dir = r"C:\Users\rokas\Desktop\projektinis\ProjektuProjektas\text_dataset"  # Directory for high-resolution training images
-    low_res_dir = r"C:\Users\rokas\Desktop\projektinis\EDSR\lr_text_dataset"  # Directory for low-resolution training images
+    high_res_dir =  # Directory for high-resolution training images
+    low_res_dir =  # Directory for low-resolution training images
 
-    val_high_res_dir = r"C:\Users\rokas\Desktop\projektinis\EDSR\val_dataset\high_ress"  # Directory for high-res validation images
-    val_low_res_dir = r"C:\Users\rokas\Desktop\projektinis\EDSR\val_dataset\low_ress"  # Directory for low-res validation images
+    val_high_res_dir =  # Directory for high-res validation images
+    val_low_res_dir =  # Directory for low-res validation images
 
-    test_data_dir = r"C:\Users\rokas\Desktop\projektinis\EDSR\test"  # Directory for test images
+    test_data_dir =  # Directory for test images
 
     # Results saving directory
-    results_dir = r"C:\Users\rokas\Desktop\projektinis\EDSR\results"  # Directory to save test results
+    results_dir =  # Directory to save test results
 
     # Checkpoint and logging
-    checkpoint_dir = r"C:\Users\rokas\Desktop\projektinis\EDSR\checkpoints"  # Directory to save model checkpoints
-    log_dir = r"C:\Users\rokas\Desktop\projektinis\EDSR\logs"  # Directory for saving logs
+    checkpoint_dir =  # Directory to save model checkpoints
+    log_dir =  # Directory for saving logs
 
 config = Config()
