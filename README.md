@@ -31,8 +31,11 @@ Prepare Datasets:
 
 
 Organize your text image datasets as follows:
+
 low_res_dir: Directory with low-resolution images (input).
+
 high_res_dir: Directory with high-resolution images (ground truth).
+
 Similarly, prepare validation and test datasets.
 
 Training the Model:
