@@ -79,10 +79,16 @@ class CustomDataset(Dataset):
 
 
 # Function to load dataset and create a DataLoader
-def load_dataset(lowres_dir, highres_dir, hr_crop_size=Config.HIGH_RES, scale=Config.scale, batch_size=Config.batch_size, shuffle=True, num_workers=4, is_test=False):
-    # Create a dataset and return a DataLoader
-    dataset = CustomDataset(lowres_dir, highres_dir, hr_crop_size, scale, is_test)
-    return dataset
+def load_dataset(lowres_dir, highres_dir, hr_crop_size, scale, batch_size=Config.batch_size, shuffle=True, is_train=True):
+    # Inicializuojame dataset
+    dataset = CustomDataset(lowres_dir, highres_dir, hr_crop_size, scale, is_test=not is_train)
+    
+    
+    if is_train:
+        return DataLoader(dataset, batch_size=batch_size, shuffle=shuffle)
+    
+    else:
+        return dataset
 
 # Function to save model checkpoint
 def save_checkpoint(model, optimizer, checkpoint_dir=Config.checkpoint_dir, epoch=0):
