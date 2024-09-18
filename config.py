@@ -35,6 +35,5 @@ class Config:
 
     # Checkpoint and logging
     checkpoint_dir =  # Directory to save model checkpoints
-    log_dir =  # Directory for saving logs
 
 config = Config()
