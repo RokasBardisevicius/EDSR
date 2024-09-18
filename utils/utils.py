@@ -1,7 +1,7 @@
 import os
 import random
 import torch
-from torch.utils.data import Dataset, DataLoader
+from torch.utils.data import Dataset
 from torchvision.transforms import ToTensor
 from PIL import Image
 from config import Config
@@ -20,8 +20,15 @@ def random_crop(lowres_img, highres_img, hr_crop_size=Config.HIGH_RES, scale=Con
     highres_y = lowres_y * scale
 
     # Crop the low-resolution and high-resolution images
-    lowres_img_cropped = lowres_img.crop((lowres_x, lowres_y, lowres_x + lowres_crop_size, lowres_y + lowres_crop_size))
-    highres_img_cropped = highres_img.crop((highres_x, highres_y, highres_x + hr_crop_size, highres_y + hr_crop_size))
+    lowres_img_cropped = lowres_img.crop((lowres_x, lowres_y,
+        lowres_x + lowres_crop_size,
+        lowres_y + lowres_crop_size
+        ))
+    
+    highres_img_cropped = highres_img.crop((highres_x, highres_y,
+        highres_x + hr_crop_size,
+        highres_y + hr_crop_size
+        ))
 
     # Convert cropped images to tensor format
     lowres_img_cropped = ToTensor()(lowres_img_cropped)
@@ -31,13 +38,14 @@ def random_crop(lowres_img, highres_img, hr_crop_size=Config.HIGH_RES, scale=Con
 
 # Custom dataset class that loads and preprocesses image pairs
 class CustomDataset(Dataset):
-    def __init__(self, lowres_dir, highres_dir, hr_crop_size=Config.HIGH_RES, scale=Config.scale):
+    def __init__(self, lowres_dir, highres_dir, hr_crop_size=Config.HIGH_RES, scale=Config.scale, is_test=False):
         # Initialize dataset paths and settings
         self.lowres_dir = lowres_dir
         self.highres_dir = highres_dir
         self.image_files = [f for f in os.listdir(self.lowres_dir) if f.endswith(('.png', '.jpg', '.jpeg'))]
         self.hr_crop_size = hr_crop_size
         self.scale = scale
+        self.is_test = is_test
 
         # Check if images exist in the directory
         if len(self.image_files) == 0:
@@ -46,33 +54,35 @@ class CustomDataset(Dataset):
             print(f"Found {len(self.image_files)} image files in {self.lowres_dir}")
 
     def __len__(self):
-        # Return the number of image pairs
+        # Return the number of image files
         return len(self.image_files)
 
     def __getitem__(self, idx):
-        # Load low-resolution and high-resolution images
+        # Load low-resolution and high-resolution image paths
         lowres_path = os.path.join(self.lowres_dir, self.image_files[idx])
         highres_path = os.path.join(self.highres_dir, self.image_files[idx])
 
-        try:
-            lowres_image = Image.open(lowres_path).convert('RGB')
-            highres_image = Image.open(highres_path).convert('RGB')
-        except Exception as e:
-            print(f"Error loading image {lowres_path} or {highres_path}: {e}")
-            raise
+        lowres_image = Image.open(lowres_path).convert('RGB')
+        highres_image = Image.open(highres_path).convert('RGB')
 
-        # Apply random cropping to images
-        lowres_cropped, highres_cropped = random_crop(
-            lowres_image, highres_image, hr_crop_size=self.hr_crop_size, scale=self.scale
-        )
+        # Apply random cropping for training
+        if not self.is_test:
+            lowres_image, highres_image = random_crop(lowres_image, highres_image, self.hr_crop_size, self.scale)
 
-        return lowres_cropped, highres_cropped
+        # Tikriname, ar reikia konvertuoti į tensorių
+        if not isinstance(lowres_image, torch.Tensor):
+            lowres_image = ToTensor()(lowres_image)
+        if not isinstance(highres_image, torch.Tensor):
+            highres_image = ToTensor()(highres_image)
+
+        return lowres_image, highres_image
+
 
 # Function to load dataset and create a DataLoader
-def load_dataset(lowres_dir, highres_dir, hr_crop_size=Config.HIGH_RES, scale=Config.scale, batch_size=Config.batch_size, shuffle=True, num_workers=4):
+def load_dataset(lowres_dir, highres_dir, hr_crop_size=Config.HIGH_RES, scale=Config.scale, batch_size=Config.batch_size, shuffle=True, num_workers=4, is_test=False):
     # Create a dataset and return a DataLoader
-    dataset = CustomDataset(lowres_dir, highres_dir, hr_crop_size, scale)
-    return DataLoader(dataset, batch_size=batch_size, shuffle=shuffle, num_workers=num_workers)
+    dataset = CustomDataset(lowres_dir, highres_dir, hr_crop_size, scale, is_test)
+    return dataset
 
 # Function to save model checkpoint
 def save_checkpoint(model, optimizer, checkpoint_dir=Config.checkpoint_dir, epoch=0):
