@@ -38,7 +38,12 @@ class EdgeAwareLoss(nn.Module):
         self.sobel_y.weight.data = sobel_kernel_y
 
     def forward(self, pred, target):
-        # Ensure that the filters and inputs are on the same device
+
+        if pred.dim() == 3:
+            pred = pred.unsqueeze(0)  # 
+        if target.dim() == 3:
+            target = target.unsqueeze(0)  
+
         device = pred.device
         self.sobel_x = self.sobel_x.to(device)
         self.sobel_y = self.sobel_y.to(device)
