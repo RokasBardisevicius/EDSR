@@ -146,9 +146,9 @@ def save_sample_images(model, val_loader, epoch, device):
 # Function to test the model on the test dataset
 def test():
     # Initialize model
-    model = EDSR(Config.scale, Config.num_channels, Config.num_res_blocks, Config.num_features)
+    model = EDSR(Config.scale, Config.num_channels, Config.num_res_blocks)
 
-    # Load weights
+    # Load pretrained weights
     try:
         checkpoint = torch.load(Config.weights_path)
         model.load_state_dict(checkpoint['model_state_dict'])
@@ -160,7 +160,7 @@ def test():
         print(f"Error loading weights: {e}")
         return
 
-    # Move model to device
+    # Move model to device (GPU or CPU)
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     model = model.to(device)
     model.eval()
@@ -168,20 +168,27 @@ def test():
     # Load test dataset
     test_loader = DataLoader(
         load_dataset(Config.test_data_dir, Config.test_data_dir, hr_crop_size=Config.HIGH_RES, scale=Config.scale, is_test=True),
-        batch_size=1, shuffle=False, num_workers=4
+        batch_size=1, shuffle=False, num_workers=0  # Set num_workers to 0 for simplicity during testing
     )
 
     # Create results directory if it doesn't exist
     os.makedirs(Config.results_dir, exist_ok=True)
     
-    with torch.no_grad():
-        for idx, (inputs, _) in enumerate(test_loader):
-            inputs = inputs.to(device)
-            outputs = model(inputs)
+    # Iterate over the test images
+    for idx, inputs in enumerate(test_loader):
+        if isinstance(inputs, list):
+            inputs = inputs[0]  # Get the first element (lowres_image)
 
-            outputs = torch.clamp(outputs, 0, 1)
+        # Move inputs to device
+        inputs = inputs.to(device)
 
-            # Save outputs directly
-            save_path = os.path.join(Config.results_dir, f"output_{idx + 1}.png")
-            save_image(outputs.squeeze(0).cpu(), save_path)
-            print(f"Test output saved at {save_path}")
+        # Model upscaling
+        outputs = model(inputs)
+
+        # Ensure the output is clamped to the range [0, 1]
+        outputs = torch.clamp(outputs, 0, 1)
+
+        # Save the upscaled image
+        output_save_path = os.path.join(Config.results_dir, f"output_{idx + 1}.png")
+        save_image(outputs.squeeze(0).cpu(), output_save_path)
+        print(f"Saved upscaled image at {output_save_path}")
